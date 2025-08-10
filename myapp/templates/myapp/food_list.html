@@ -1,6 +1,20 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load form_tags %}
 {% block content %}
+<div class="container py-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <label for="calorieProgress" class="form-label fw-semibold">Daily Calorie Progress</label>
+            <div class="progress mb-4 position-relative" style="height: 30px;">
+                <div id="calorieProgress" class="progress-bar" role="progressbar" style="width: {{ percent_calories }}%; font-size: 1.1rem;" data-calories="{{ sum_calories|floatformat:0 }}"></div>
+                <span class="position-absolute w-100 text-center" style="top: 0; left: 0; line-height: 30px; font-size: 1.1rem; color: #000;">
+                    {{ sum_calories|floatformat:0 }} / 2000 Kcal
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -16,29 +30,19 @@
                     {% endif %}
                     <form method="post" class="row g-3 align-items-center justify-content-center mb-4">
                         {% csrf_token %}
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-2">
                             <label for="id_food" class="form-label fw-semibold">{{ form.food.label }}</label>
                             {{ form.food|add_class:'form-select' }}
                         </div>
-                        <div class="col-md-2 d-grid">
+                        <div class="col-md-2 d-grid mb-2">
                             <button type="submit" class="btn btn-primary btn-block">Add</button>
                         </div>
-                        <div class="col-md-2 d-grid">
+                        <div class="col-md-2 d-grid mb-2">
                             <button type="submit" name="clear" value="1" class="btn btn-danger btn-block" id="clear-btn">Clear</button>
                         </div>
                     </form>
-                    <script>
-                        document.getElementById('clear-btn').addEventListener('click', function(e) {
-                            // Remove required attribute from the select field before submitting
-                            var select = document.getElementById('id_food');
-                            if (select) {
-                                select.required = false;
-                            }
-                        });
-                    </script>
-                    </form>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
+                    <div class="table-responsive mt-4">
+                        <table class="table table-hover align-middle table-bordered bg-white">
                             <thead class="table-dark">
                                 <tr>
                                     <th>Name</th>
@@ -61,10 +65,10 @@
                                     {% endfor %}
                                     <tr style="background-color: #e0f7fa; font-weight: bold;">
                                         <td>Total</td>
-                                        <td>{{ sum_carbs }}</td>
-                                        <td>{{ sum_protein }}</td>
-                                        <td>{{ sum_fats }}</td>
-                                        <td>{{ sum_calories }}</td>
+                                        <td>{{ sum_carbs }} (gm)</td>
+                                        <td>{{ sum_protein }} (gm)</td>
+                                        <td>{{ sum_fats }} (gm)</td>
+                                        <td>{{ sum_calories }} (Kcal)</td>
                                     </tr>
                                 {% else %}
                                     <tr><td colspan="5" class="text-center">No foods consumed yet.</td></tr>
@@ -77,4 +81,5 @@
         </div>
     </div>
 </div>
+<script src="{% static 'myapp/food_list.js' %}"></script>
 {% endblock %}

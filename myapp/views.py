@@ -36,6 +36,7 @@ def food_list(request):
     sum_protein = round(sum([item.food_consumed.protein for item in consumed]), 2) if consumed else 0
     sum_fats = round(sum([item.food_consumed.fats for item in consumed]), 2) if consumed else 0
     sum_calories = round(sum([item.food_consumed.calories for item in consumed]), 2) if consumed else 0
+    percent_calories = min(int((sum_calories / 2000) * 100), 100) if sum_calories else 0
     return render(request, 'myapp/food_list.html', {
         'foods': foods,
         'form': form,
@@ -44,4 +45,5 @@ def food_list(request):
         'sum_protein': sum_protein,
         'sum_fats': sum_fats,
         'sum_calories': sum_calories,
+        'percent_calories': percent_calories,
     })
