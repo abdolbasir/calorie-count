@@ -1,3 +1,6 @@
+# Messages framework (ensure this is present)
+from django.contrib.messages import constants as messages
+
 """
 Django settings for mysie project.
 

@@ -7,14 +7,35 @@
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <h2 class="card-title mb-4 text-center">Food List</h2>
-                    <form method="get" class="row g-3 align-items-center justify-content-center mb-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <form method="post" class="row g-3 align-items-center justify-content-center mb-4">
+                        {% csrf_token %}
                         <div class="col-md-6">
                             <label for="id_food" class="form-label fw-semibold">{{ form.food.label }}</label>
                             {{ form.food|add_class:'form-select' }}
                         </div>
                         <div class="col-md-2 d-grid">
-                            <button type="submit" class="btn btn-primary btn-block">Select</button>
+                            <button type="submit" class="btn btn-primary btn-block">Add</button>
                         </div>
+                        <div class="col-md-2 d-grid">
+                            <button type="submit" name="clear" value="1" class="btn btn-danger btn-block" id="clear-btn">Clear</button>
+                        </div>
+                    </form>
+                    <script>
+                        document.getElementById('clear-btn').addEventListener('click', function(e) {
+                            // Remove required attribute from the select field before submitting
+                            var select = document.getElementById('id_food');
+                            if (select) {
+                                select.required = false;
+                            }
+                        });
+                    </script>
                     </form>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
@@ -28,19 +49,26 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for food in foods %}
-                                <tr>
-                                    <td>{{ food.name }}</td>
-                                    <td>{{ food.carbs }}</td>
-                                    <td>{{ food.protein }}</td>
-                                    <td>{{ food.fats }}</td>
-                                    <td>{{ food.calories }}</td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="5" class="text-center">No food items found.</td>
-                                </tr>
-                                {% endfor %}
+                                {% if consumed and consumed.exists %}
+                                    {% for item in consumed %}
+                                        <tr>
+                                            <td>{{ item.food_consumed.name }}</td>
+                                            <td>{{ item.food_consumed.carbs }}</td>
+                                            <td>{{ item.food_consumed.protein }}</td>
+                                            <td>{{ item.food_consumed.fats }}</td>
+                                            <td>{{ item.food_consumed.calories }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    <tr style="background-color: #e0f7fa; font-weight: bold;">
+                                        <td>Total</td>
+                                        <td>{{ sum_carbs }}</td>
+                                        <td>{{ sum_protein }}</td>
+                                        <td>{{ sum_fats }}</td>
+                                        <td>{{ sum_calories }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr><td colspan="5" class="text-center">No foods consumed yet.</td></tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>
