@@ -1,15 +1,18 @@
-
-from django.shortcuts import render
-
-from .models import Food
-from .forms import FoodSelectForm
-
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Food, Consume
 from .forms import FoodSelectForm
 
 from django.contrib import messages
+
+@login_required
+def delete_consume(request, consume_id):
+    consume = get_object_or_404(Consume, id=consume_id, user=request.user)
+    if request.method == 'POST':
+        consume.delete()
+        messages.success(request, 'Food entry removed.')
+    return redirect('food_list')
+
 
 @login_required
 def food_list(request):

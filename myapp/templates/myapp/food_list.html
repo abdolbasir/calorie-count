@@ -17,69 +17,93 @@
 </div>
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h2 class="card-title mb-4 text-center">Food List</h2>
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-success" role="alert">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                    <form method="post" class="row g-3 align-items-center justify-content-center mb-4">
-                        {% csrf_token %}
-                        <div class="col-md-6 mb-2">
-                            <label for="id_food" class="form-label fw-semibold">{{ form.food.label }}</label>
-                            {{ form.food|add_class:'form-select' }}
-                        </div>
-                        <div class="col-md-2 d-grid mb-2">
-                            <button type="submit" class="btn btn-primary btn-block">Add</button>
-                        </div>
-                        <div class="col-md-2 d-grid mb-2">
-                            <button type="submit" name="clear" value="1" class="btn btn-danger btn-block" id="clear-btn">Clear</button>
-                        </div>
-                    </form>
-                    <div class="table-responsive mt-4">
-                        <table class="table table-hover align-middle table-bordered bg-white">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Carbs (g)</th>
-                                    <th>Protein (g)</th>
-                                    <th>Fats (g)</th>
-                                    <th>Calories</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if consumed and consumed.exists %}
-                                    {% for item in consumed %}
+        <div class="col-lg-10">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h2 class="card-title mb-4 text-center">Food List</h2>
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-success" role="alert">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            <form method="post" class="row g-3 align-items-center justify-content-center mb-4">
+                                {% csrf_token %}
+                                <div class="col-md-6 mb-2">
+                                    <label for="id_food" class="form-label fw-semibold">{{ form.food.label }}</label>
+                                    {{ form.food|add_class:'form-select' }}
+                                </div>
+                                <div class="col-md-2 d-grid mb-2">
+                                    <button type="submit" class="btn btn-primary btn-block">Add</button>
+                                </div>
+                                <div class="col-md-2 d-grid mb-2">
+                                    <button type="submit" name="clear" value="1" class="btn btn-danger btn-block" id="clear-btn">Clear</button>
+                                </div>
+                            </form>
+                            <div class="table-responsive mt-4">
+                                <table class="table table-hover align-middle table-bordered bg-white">
+                                    <thead class="table-dark">
                                         <tr>
-                                            <td>{{ item.food_consumed.name }}</td>
-                                            <td>{{ item.food_consumed.carbs }}</td>
-                                            <td>{{ item.food_consumed.protein }}</td>
-                                            <td>{{ item.food_consumed.fats }}</td>
-                                            <td>{{ item.food_consumed.calories }}</td>
+                                            <th>Name</th>
+                                            <th>Carbs (g)</th>
+                                            <th>Protein (g)</th>
+                                            <th>Fats (g)</th>
+                                            <th>Calories</th>
+                                            <th>Actions</th>
                                         </tr>
-                                    {% endfor %}
-                                    <tr style="background-color: #e0f7fa; font-weight: bold;">
-                                        <td>Total</td>
-                                        <td>{{ sum_carbs }} (gm)</td>
-                                        <td>{{ sum_protein }} (gm)</td>
-                                        <td>{{ sum_fats }} (gm)</td>
-                                        <td>{{ sum_calories }} (Kcal)</td>
-                                    </tr>
-                                {% else %}
-                                    <tr><td colspan="5" class="text-center">No foods consumed yet.</td></tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
+                                    </thead>
+                                    <tbody>
+                                        {% if consumed and consumed.exists %}
+                                            {% for item in consumed %}
+                                                <tr>
+                                                    <td>{{ item.food_consumed.name }}</td>
+                                                    <td>{{ item.food_consumed.carbs }}</td>
+                                                    <td>{{ item.food_consumed.protein }}</td>
+                                                    <td>{{ item.food_consumed.fats }}</td>
+                                                    <td>{{ item.food_consumed.calories }}</td>
+                                                    <td>
+                                                        <form method="post" action="{% url 'delete_consume' item.id %}" style="display:inline;">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="bi bi-trash"></i> Delete</button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            <tr style="background-color: #e0f7fa; font-weight: bold;">
+                                                <td>Total</td>
+                                                <td>{{ sum_carbs }} (gm)</td>
+                                                <td>{{ sum_protein }} (gm)</td>
+                                                <td>{{ sum_fats }} (gm)</td>
+                                                <td>{{ sum_calories }} (Kcal)</td>
+                                            </tr>
+                                        {% else %}
+                                            <tr><td colspan="6" class="text-center">No foods consumed yet.</td></tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-center justify-content-center mb-4 mb-md-0">
+                    <div class="card shadow-sm p-3 w-100" style="background: #f8fafc;">
+                        <h5 class="text-center mb-3">Nutrient Breakdown</h5>
+                        <div class="d-flex justify-content-center align-items-center" style="min-height: 240px;">
+                            <canvas id="nutrientPieChart" width="300" height="300"
+                                data-carbs="{{ sum_carbs|default:0 }}"
+                                data-protein="{{ sum_protein|default:0 }}"
+                                data-fats="{{ sum_fats|default:0 }}">
+                            </canvas>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'myapp/food_list.js' %}"></script>
 {% endblock %}

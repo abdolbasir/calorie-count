@@ -27,4 +27,48 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    // Chart.js Pie Chart for nutrients
+    var pie = document.getElementById('nutrientPieChart');
+    if (pie) {
+        var carbs = parseFloat(pie.getAttribute('data-carbs'));
+        var protein = parseFloat(pie.getAttribute('data-protein'));
+        var fats = parseFloat(pie.getAttribute('data-fats'));
+        var total = carbs + fats + protein
+        var ctx = pie.getContext('2d');
+        var data = {
+            labels: [`Carbs ${Math.round((carbs/total)*100)} %`, `Protein ${Math.round((protein/total)*100)} %`, `Fats ${Math.round((fats/total)*100)} %`],
+            datasets: [{
+                data: [carbs, protein, fats],
+                backgroundColor: [
+                    '#4e79a7', // Carbs - blue
+                    '#f28e2b', // Protein - orange
+                    '#e15759'  // Fats - red
+                ],
+                borderColor: [
+                    '#4e79a7',
+                    '#f28e2b',
+                    '#e15759'
+                ],
+                borderWidth: 2
+            }]
+        };
+        new Chart(ctx, {
+            type: 'pie',
+            data: data,
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            font: { size: 14 }
+                        }
+                    }
+                }
+            }
+        });
+    }
 });
+
+
